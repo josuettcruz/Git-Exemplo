@@ -3,6 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Adm
@@ -14,6 +16,7 @@ public class cadastroVIEW extends javax.swing.JFrame {
      */
     public cadastroVIEW() {
         initComponents();
+        setTitle("Cadastro");
     }
 
     /**
@@ -136,26 +139,59 @@ public class cadastroVIEW extends javax.swing.JFrame {
 
     private void cadastroNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cadastroNomeActionPerformed
         
+        //null
         
     }//GEN-LAST:event_cadastroNomeActionPerformed
 
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
-        ProdutosDTO produto = new ProdutosDTO();
-        String nome = cadastroNome.getText();
-        String valor = cadastroValor.getText();
-        String status = "A Venda";
-        produto.setNome(nome);
-        produto.setValor(Integer.parseInt(valor));
-        produto.setStatus(status);
         
-        ProdutosDAO produtodao = new ProdutosDAO();
-        produtodao.cadastrarProduto(produto);
-        
+        try{
+            
+            Produtos produto = new Produtos();
+            String nome = cadastroNome.getText();
+            String valor = cadastroValor.getText();
+            String status = "A Venda";
+            ProdutosDAO produtodao = new ProdutosDAO();
+            produto.setNome(nome);
+            produto.setValor(Integer.parseInt(valor));
+            produto.setStatus(status);
+            produtodao.cadastrarProduto(produto);
+            produtodao.Alert();
+            String close = produtodao.Close();
+            System.out.println(close);
+            
+            cadastroNome.setText("");
+            cadastroValor.setText("");
+            
+        }catch(NumberFormatException e){
+            
+            JOptionPane.showMessageDialog(null, e.getMessage(), 
+                    "NumberFormatException: " + 
+                    e.hashCode(), 
+                    JOptionPane.INFORMATION_MESSAGE);
+            
+            cadastroNome.setText("");
+            cadastroValor.setText("");
+            
+        }catch(Exception e){
+            
+            JOptionPane.showMessageDialog(null, e.getMessage(), 
+                    "Exception: " + 
+                    e.hashCode(), 
+                    JOptionPane.ERROR_MESSAGE);
+            
+            System.out.println(e.getMessage());
+            System.exit(0);
+            
+        }
+            
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
     private void btnProdutosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdutosActionPerformed
+        
         listagemVIEW listagem = new listagemVIEW(); 
         listagem.setVisible(true);
+        
     }//GEN-LAST:event_btnProdutosActionPerformed
 
     /**

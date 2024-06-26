@@ -1,5 +1,5 @@
-
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -16,10 +16,136 @@ public class listagemVIEW extends javax.swing.JFrame {
     /**
      * Creates new form listagemVIEW
      */
+    
     public listagemVIEW() {
+        
         initComponents();
         listarProdutos();
+        setTitle("Listagem");
+        
+        try{
+            
+            Table();
+            
+        }catch(Exception e){
+            
+            JOptionPane.showMessageDialog(null, e.getMessage(), 
+                    "Exception: " + 
+                    e.hashCode(), 
+                    JOptionPane.ERROR_MESSAGE);
+            
+            System.exit(0);
+            
+        }
+        
     }
+    
+    private void Index(){
+        dispose();
+        listagemVIEW listagem = new listagemVIEW();
+        listagem.setVisible(true);
+    }
+    
+    private void Return(){
+        dispose();
+        cadastroVIEW cadastro = new cadastroVIEW();
+        cadastro.setVisible(true);
+    }
+    
+    private void Table(){
+        
+        final String[] modelo = {"ID", "Nome", "Valor", "Status"};
+        DefaultTableModel tela = new DefaultTableModel(modelo, 0);
+        
+        ProdutosDAO listarprodutos = new ProdutosDAO();
+        ArrayList<Produtos> list = listarprodutos.listarProdutos();
+        listarprodutos.Alert();
+        listarprodutos.Close();
+        
+        if(list.isEmpty()){
+            
+            String[] dados = new String[modelo.length];
+            
+            for(int dg = 0; dg < dados.length; dg++){
+                dados[dg] = "...";
+            }
+            
+            tela.addRow(dados);
+            
+            listaProdutos.setModel(tela);
+            
+        } else {
+            
+            for(int i = 0; i < list.size(); i++){
+                
+                String[] g = new String[modelo.length];
+                
+                g[0] = "";
+                
+                if(list.get(i).getId() < 10){
+                    
+                    g[0] += "00";
+                    g[0] += list.get(i).getId();
+                    
+                } else if(list.get(i).getId() < 100){
+                    
+                    g[0] += "0";
+                    g[0] += list.get(i).getId();
+                    
+                } else {
+                    
+                    g[0] += list.get(i).getId();
+                    
+                }
+                
+                g[1] = list.get(i).getNome();
+                
+                g[2] = "R$ ";
+                
+                if(list.get(i).getValor() < 10){
+                    
+                    g[2] += "00000";
+                    g[2] += list.get(i).getValor();
+                    
+                } else if(list.get(i).getValor() < 100){
+                    
+                    g[2] += "0000";
+                    g[2] += list.get(i).getValor();
+                    
+                } else if(list.get(i).getValor() < 1000){
+                    
+                    g[2] += "000";
+                    g[2] += list.get(i).getValor();
+                    
+                } else if(list.get(i).getValor() < 10000){
+                    
+                    g[2] += "00";
+                    g[2] += list.get(i).getValor();
+                    
+                } else if(list.get(i).getValor() < 1000000){
+                    
+                    g[2] += "0";
+                    g[2] += list.get(i).getValor();
+                    
+                } else {
+                    
+                    g[2] += list.get(i).getValor();
+                    
+                }
+                
+                g[2] += ",00";
+                
+                g[3] = list.get(i).getStatus();
+                
+                tela.addRow(g);
+                
+            }//for(int i = 0; i < list.size(); i++)
+            
+            listaProdutos.setModel(tela);
+            
+        }//if(list.isEmpty())
+        
+    }//Table()
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -136,12 +262,38 @@ public class listagemVIEW extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
-        String id = id_produto_venda.getText();
+       String id = id_produto_venda.getText();
         
-        ProdutosDAO produtosdao = new ProdutosDAO();
-        
-        //produtosdao.venderProduto(Integer.parseInt(id));
-        listarProdutos();
+        try{
+            
+            ProdutosDAO produtosdao = new ProdutosDAO();
+            produtosdao.venderProduto(Integer.parseInt(id));
+            produtosdao.Alert();
+            String close = produtosdao.Close();
+            System.out.println(close);
+            
+            Index();
+            
+        }catch(NumberFormatException e){
+            
+            JOptionPane.showMessageDialog(null, e.getMessage(), 
+                    "NumberFormatException: " + 
+                    e.hashCode(), 
+                    JOptionPane.INFORMATION_MESSAGE);
+            
+            id_produto_venda.setText("");
+            
+        }catch(Exception e){
+            
+            JOptionPane.showMessageDialog(null, e.getMessage(), 
+                    "Exception: " + 
+                    e.hashCode(), 
+                    JOptionPane.ERROR_MESSAGE);
+            
+            System.out.println(e.getMessage());
+            System.exit(0);
+            
+        }
     }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVendasActionPerformed
@@ -150,7 +302,7 @@ public class listagemVIEW extends javax.swing.JFrame {
     }//GEN-LAST:event_btnVendasActionPerformed
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
-        this.dispose();
+        Return();
     }//GEN-LAST:event_btnVoltarActionPerformed
 
     /**
@@ -208,7 +360,7 @@ public class listagemVIEW extends javax.swing.JFrame {
             DefaultTableModel model = (DefaultTableModel) listaProdutos.getModel();
             model.setNumRows(0);
             
-            ArrayList<ProdutosDTO> listagem = produtosdao.listarProdutos();
+            ArrayList<Produtos> listagem = produtosdao.listarProdutos();
             
             for(int i = 0; i < listagem.size(); i++){
                 model.addRow(new Object[]{
